@@ -73,7 +73,7 @@ acoustic.saturation <- function(pow, bgn, min.db = -90, max.db = 6.5, p = 0.90, 
   pct <- quantile(as.matrix(bgn), p = p)
 	amf <- matrix( mapply( function(x ,y, p = pct, min.Db = min.db, max.Db = max.db) { 
 	                               ifelse( x > max.Db & x > min.Db, 1, ifelse(y > pct, 1, 0))
-								   }, pow, bgn), nrow=nrow(pow), ncol=ncol(pow), byrow = TRUE)
+				       }, pow, bgn), nrow=nrow(pow), ncol=ncol(pow), byrow = TRUE)
 	if(probs == TRUE) {
 	  amf.prob <- function(x) {
 	    p = prop.table(table(x))
@@ -86,13 +86,11 @@ acoustic.saturation <- function(pow, bgn, min.db = -90, max.db = 6.5, p = 0.90, 
 	  }
 	    Sm <- apply(amf, MARGIN = 1, FUN = amf.prob )
 	  } else {							   
-	  Sm = apply(amf, MARGIN = 1, FUN = sum)								 
-        if(raw.freq == FALSE) {									 
-          Sm <- Sm / length(Sm)
-        }	 
-        if(smooth) {
-          Sm <- as.numeric(smooth::sma(Sm, h = window)$fitted)  
-        }
+	    Sm = apply(amf, MARGIN = 1, FUN = sum) 
+          if(raw.freq == FALSE) { Sm <- Sm / ncol(pow) }	 
+      if(smooth) {
+        Sm <- as.numeric(smooth::sma(Sm, h = window)$fitted)  
+      }
 	}
   return(Sm)  
 }
