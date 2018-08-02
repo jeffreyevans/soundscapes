@@ -53,6 +53,7 @@
 acoustic.saturation <- function(pow, bgn = NULL, min.db = -90, max.db = 6.5, p = 0.90, noise = NULL,   
                                 decibels = FALSE, raw.freq = FALSE, probs = FALSE, 
 								smooth = FALSE, window = 5) {
+  if(missing(pow)) stop("Must provide pow matrix")	
   if(!is.null(bgn)) {							
     if( ncol(pow) != ncol(bgn) )
       stop("Column dimensions of pow and bgn do not match")
