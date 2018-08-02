@@ -1,0 +1,21 @@
+Package: soundscapes
+Type: Package
+Title: Modelling and formating utilities for acoustic soundscapes
+Version: 0.0-1
+Date: 2018-02-08
+Authors@R: c(person(family="Evans", given="Jeffrey S.", email = "jeffrey_evans@tnc.org", 
+             role = c("aut", "cre")), person(family="Tim", given="Boucher", role = "ctb") )
+Description: Utilities to support formatting and modeling of acoustic soundscape data.
+Depends:
+    R (>= 3.5.0)
+Imports:
+    smooth,
+    methods
+Maintainer: Jeffrey S. Evans <jeffrey_evans@tnc.org>
+License: GPL-3
+URL: https://cran.r-project.org/package=spatialEco
+NeedsCompilation: no
+Repository: CRAN
+LazyData: true
+RoxygenNote: 6.0.1
+Roxygen: list(wrap = FALSE)

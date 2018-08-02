@@ -1,0 +1,19 @@
+citHeader("To cite soundscapes in publications use:")
+
+soundscapes.ref <- c(
+   bibentry(
+     bibtype = "Manual",
+     title = "soundscapes",
+     author = c(
+	    person(c("Jeffrey", "S."), "Evans", role = c("aut", "cre")),
+ 	    person(c("Timothy"), "Boucher", role = c("aut"))
+     ),
+     year = "2018",
+     note = "R package version 0.0-1",
+     url = "https://CRAN.R-project.org/package=soundscapes",
+     key = "soundscapes-package"
+   )
+)
+
+# print(soundscapes, style = "citation")
+# toBibtex(soundscapes.ref)
