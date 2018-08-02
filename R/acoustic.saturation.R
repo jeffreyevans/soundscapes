@@ -1,5 +1,5 @@
 #' @title Acoustic saturation
-#' @description Calculates the acoustic saturation index (saturation per minute/row).   
+#' @description Calculates the acoustic saturation index (saturation per minute/row)   
 #'
 #' @param pow          NxN matrix of Power (POW) values (must match dimensions of bgn)
 #' @param bgn          NxN matrix of Background Noise (BGN) values (must match dimensions of pow)
@@ -67,15 +67,24 @@ acoustic.saturation <- function(pow, bgn, min.db = -90, max.db = 6.5, p = 0.90, 
 	  if( noise == "mean") {
         bgn <- ( as.matrix(bgn) - mean(as.matrix(bgn)) )
 	  } else {
-        bgn <- ( as.matrix(bgn) - stats::median(as.matrix(bgn)) )	  
+        bgn <- ( as.matrix(bgn) - median(as.matrix(bgn)) )	  
 	  }
   }  
-  pct <- stats::quantile(as.matrix(bgn), p = p)
+  pct <- quantile(as.matrix(bgn), p = p)
 	amf <- matrix( mapply( function(x ,y, p = pct, min.Db = min.db, max.Db = max.db) { 
 	                               ifelse( x > max.Db & x > min.Db, 1, ifelse(y > pct, 1, 0))
 								   }, pow, bgn), nrow=nrow(pow), ncol=ncol(pow), byrow = TRUE)
 	if(probs == TRUE) {
-	  Sm <- apply(amf, MARGIN = 1, FUN = function(x) prop.table(table(x))[2] )	  
+	  amf.prob <- function(x) {
+	    p = prop.table(table(x))
+		  if(dim(p) < 2) {
+            p = as.numeric(names(p))  
+          }	else {
+		    p = p[2]
+          }
+        return(p)		  
+	  }
+	    Sm <- apply(amf, MARGIN = 1, FUN = amf.prob )
 	  } else {							   
 	  Sm = apply(amf, MARGIN = 1, FUN = sum)								 
         if(raw.freq == FALSE) {									 
