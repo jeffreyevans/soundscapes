@@ -87,7 +87,7 @@ acoustic.saturation <- function(pow, bgn, min.db = -90, max.db = 6.5, p = 0.90, 
 	    Sm <- apply(amf, MARGIN = 1, FUN = amf.prob )
 	  } else {							   
 	    Sm = apply(amf, MARGIN = 1, FUN = sum) 
-          if(raw.freq == FALSE) { Sm <- Sm / ncol(pow) }	 
+          if(raw.freq == FALSE) { Sm <- Sm / ncol(pow) * 100 }	 
       if(smooth) {
         Sm <- as.numeric(smooth::sma(Sm, h = window)$fitted)  
       }
