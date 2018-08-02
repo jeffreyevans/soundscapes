@@ -2,18 +2,18 @@
 #' @description Calculates the acoustic saturation index (saturation per minute/row)   
 #'
 #' @param pow          NxN matrix of Power (POW) values (must match dimensions of bgn)
-#' @param bgn          NxN matrix of Background Noise (BGN) values (must match dimensions of pow)
+#' @param bgn          NxN matrix of Background Noise (BGN) values. If specified, must match dimensions of pow)
 #' @param min.db       Minimum decibels (default is 0)
 #' @param max.db       Maximum decibels (default is 6.5)
 #' @param p            Threshold percentile for bgn, default is p=0.90 (90th percentile)
 #' @param noise        Remove noise in the BGN. Default is null and valid options are mean or median)
 #' @param decibels     (FALSE/TRUE) If TRUE, transform the data, assuming Hz, to decibels using Db=20*log(x) 
-#' @param raw.freq     (FALSE/TRUE) Return raw frequencies rather than normalized 
+#' @param raw.freq     (FALSE/TRUE) Return raw frequencies rather than percentage values 
 #' @param probs        (FALSE/TRUE) Return a vector of row-wise probabilities indicating saturation
 #' @param smooth       (FALSE/TRUE) Smooth the raw or normalized frequencies 
 #' @param window       Size of window to use in smoothing 
 #'
-#' @return A vector equal to nrow(pow & bgn) 
+#' @return A vector equal to nrow(pow) 
 #'
 #' @author Jeffrey S. Evans  <jeffrey_evans@@tnc.org> and Tim Boucher <tboucher@@tnc.org>
 #'
@@ -50,30 +50,39 @@
 #' @seealso \code{\link[smooth]{sma}} for details on ARIMA smoothing 
 #'
 #' @export acoustic.saturation 	
-acoustic.saturation <- function(pow, bgn, min.db = -90, max.db = 6.5, p = 0.90, noise = NULL,   
+acoustic.saturation <- function(pow, bgn = NULL, min.db = -90, max.db = 6.5, p = 0.90, noise = NULL,   
                                 decibels = FALSE, raw.freq = FALSE, probs = FALSE, 
 								smooth = FALSE, window = 5) {
-  if( ncol(pow) != ncol(bgn) )
-    stop("Column dimensions of pow and bgn do not match")
-  if( nrow(pow) != nrow(bgn) )
-    stop("Row dimensions of pow and bgn do not match")
+  if(!is.null(bgn)) {							
+    if( ncol(pow) != ncol(bgn) )
+      stop("Column dimensions of pow and bgn do not match")
+    if( nrow(pow) != nrow(bgn) )
+      stop("Row dimensions of pow and bgn do not match")
+    if(!is.null(noise)) {
+      message("Partialling out noise by subtracting centered value")
+      if( noise == "mean") {
+          bgn <- ( as.matrix(bgn) - mean(as.matrix(bgn)) )
+      } else {
+          bgn <- ( as.matrix(bgn) - median(as.matrix(bgn)) )
+      }
+    }
+    pct <- quantile(as.matrix(bgn), p = p)
+  }	
   if(decibels) {
     message("Converting data to decibels, assuming input units in Hz")
       pow <- 20 * log(as.matrix(pow))   
-      bgn <- 20 * log(as.matrix(bgn))   
+      if(!is.null(bgn)) { bgn <- 20 * log(as.matrix(bgn)) }
   }	
-  if(!is.null(noise)) {
-    message("Partialling out noise by subtracting centered value")
-	  if( noise == "mean") {
-        bgn <- ( as.matrix(bgn) - mean(as.matrix(bgn)) )
-	  } else {
-        bgn <- ( as.matrix(bgn) - median(as.matrix(bgn)) )	  
-	  }
-  }  
-  pct <- quantile(as.matrix(bgn), p = p)
-	amf <- matrix( mapply( function(x ,y, p = pct, min.Db = min.db, max.Db = max.db) { 
-	                               ifelse( x > max.Db & x > min.Db, 1, ifelse(y > pct, 1, 0))
-				       }, pow, bgn), nrow=nrow(pow), ncol=ncol(pow), byrow = TRUE)
+  if(!is.null(bgn)) {   
+    amf <- matrix( mapply( function(x ,y, p = pct, min.Db = min.db, max.Db = max.db) { 
+	               ifelse( x > max.Db & x > min.Db, 1, ifelse(y > pct, 1, 0))
+				   }, pow, bgn), nrow=nrow(pow), ncol=ncol(pow), byrow = TRUE)
+				   
+    } else {
+      amf <- matrix( apply(pow, MARGIN=1, FUN=function(x) {
+	                 ifelse( x > max.db & x > min.db, 1, 0) } ),
+					 nrow=nrow(pow), ncol=ncol(pow), byrow = TRUE)
+    }	
 	if(probs == TRUE) {
 	  amf.prob <- function(x) {
 	    p = prop.table(table(x))
@@ -82,7 +91,7 @@ acoustic.saturation <- function(pow, bgn, min.db = -90, max.db = 6.5, p = 0.90, 
           }	else {
 		    p = p[2]
           }
-        return(p)		  
+        return(p)
 	  }
 	    Sm <- apply(amf, MARGIN = 1, FUN = amf.prob )
 	  } else {							   
@@ -92,5 +101,5 @@ acoustic.saturation <- function(pow, bgn, min.db = -90, max.db = 6.5, p = 0.90, 
         Sm <- as.numeric(smooth::sma(Sm, h = window)$fitted)  
       }
 	}
-  return(Sm)  
+  return(Sm)
 }
