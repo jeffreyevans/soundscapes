@@ -1,10 +1,10 @@
 #' @title Area Under the Curve
 #' @description Calculates the Area Under the Curve for acoustic metrics  
 #'
-#' @param x     NxN matrix of Power (POW) values (must match dimensions of bgn)
+#' @param x     NxN matrix
 #' @param type  Use "rollmean" or "trapezoidal" integration for AUC 
 #'
-#' @return A vector equal to nrow(xs) 
+#' @return A vector equal to nrow(x) 
 #'
 #' @author Jeffrey S. Evans  <jeffrey_evans@@tnc.org> and Tim Boucher <tboucher@@tnc.org>
 #'
@@ -13,7 +13,7 @@
 #' auc(POW, type = "trapezoidal")
 #'
 #' @export
-auc <- function(x, type = c("rollmean", "trapezoidal")) {
+auc <- function(x, type = c("rollmean", "trapezoidal"), standardize = TRUE) {
   if(missing(x)) 
     stop("Must provide matrix")
   if(class(x) != "data.frame" & class(x) != "matrix")
@@ -69,8 +69,7 @@ auc <- function(x, type = c("rollmean", "trapezoidal")) {
             if (err < tol) break
         }
         return(list(value = T, iter = i, rel.err = err))
-    }
-  
+    }  
       if (missing(y)) {
           if (length(x) == 0) return(0)
           y <- x
@@ -92,11 +91,13 @@ auc <- function(x, type = c("rollmean", "trapezoidal")) {
     return(0.5*(p1-p2))
   } 
   if( type == "rollmean") {  
-    return( apply(x, MARGIN=1, FUN=rollmean.fun) )
+    auc.vaule <- apply(x, MARGIN=1, FUN=rollmean.fun) 
   } else if(type == "trapezoidal") {
-    return( apply(x, MARGIN=1, FUN=trapz.fun) )
+    auc.vaule <- apply(x, MARGIN=1, FUN=trapz.fun) 
   } else {
     stop("Not a valid option for type")
-  }  
+  }
+  if(standardize) auc.vaule <-  auc.vaule / max(auc.vaule, na.rm=TRUE) 
+    return(auc.vaule)  
 }
 
