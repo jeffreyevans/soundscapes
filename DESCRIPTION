@@ -9,9 +9,9 @@ Description: Utilities to support formatting and modeling of acoustic soundscape
 Depends:
     R (>= 3.5.0)
 Imports:
-    ecp,
+    ecp (>= 3.1.0),
     smooth,
-    zoo,
+	  zoo,
     methods
 Maintainer: Jeffrey S. Evans <jeffrey_evans@tnc.org>
 License: GPL-3
@@ -21,4 +21,3 @@ Repository: CRAN
 LazyData: true
 RoxygenNote: 6.0.1
 Roxygen: list(wrap = FALSE)
-
