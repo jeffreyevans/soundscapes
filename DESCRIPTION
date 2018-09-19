@@ -9,7 +9,7 @@ Description: Utilities to support formatting and modeling of acoustic soundscape
 Depends:
     R (>= 3.5.0)
 Imports:
-    ecp
+    ecp,
     smooth,
     zoo,
     methods
