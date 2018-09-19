@@ -6,8 +6,10 @@ soundscapes R package with utilities for formatting and analyzing acoustic sound
     Available functions in soundscapes are:
     
          acoustic.saturation - Calculates the acoustic saturation index following Burivalova et al., (2018)
-         acoustic.summary - Calculates statistical summaries of an acoustic matrix, based on defined time-periods
+         acoustic.summary - Calculates statistical summaries of an acoustic matrix, based on defined time-periods or
+                              automatic change point detection
          auc - Area Under the Curve of acoustic metrics (by row across columns)
+         change.point - Change point detection called by acoustic.summary function 
          rm.timeperiods - Removes specified time-period(s), based on date-time column, from data.frame/matrix
 ​
 
