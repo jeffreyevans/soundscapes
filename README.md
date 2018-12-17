@@ -16,6 +16,6 @@ soundscapes R package with utilities for formatting and analyzing acoustic sound
           
  **Bugs**: Users are encouraged to report bugs here. Go to [issues](https://github.com/jeffreyevans/soundscapes/issues) in the menu above, and press new issue to start a new bug report, documentation correction or feature request. You can direct questions to <jeffrey_evans@tnc.org>.
 
-**To install the development version, run the following (requires the devtools package):**
-`devtools::install_github("jeffreyevans/soundscapes")`
+**To install the development version, run the following (requires the remotes package):**
+`remotes::install_github("jeffreyevans/soundscapes")`
           
