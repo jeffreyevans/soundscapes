@@ -16,7 +16,7 @@
 #'
 #'   plot_acoustic_matrix(pmn, add.time=TRUE, time.int=20)
 #'
-#' @export
+#' @export plot_acoustic_matrix
 plot_acoustic_matrix <- function(x, add.time = FALSE, time.int = 20, ncbks = 20,  
                                  cols = NULL, transpose = FALSE, ...) {
 	n = nrow(x)
