@@ -1,4 +1,4 @@
-h#' @title Plot acoustic matrix
+#' @title Plot acoustic matrix
 #'
 #' @param x          An acoustic matrix eg., time, bin, amplitude (dB)
 #' @param add.time   Should time (minutes) be added to x axis 
