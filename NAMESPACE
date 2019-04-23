@@ -4,6 +4,7 @@ export(acoustic.saturation)
 export(acoustic.summary)
 export(auc)
 export(change.point)
+export(plot_acoustic_matrix)
 export(rm.timeperiods)
 export(ThielSen.slope)
-export(plot.acoustic.matrix)
+
