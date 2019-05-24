@@ -42,27 +42,26 @@
 #' @seealso \code{\link[spatialEco]{moments}} for details on summary statistics 
 #'
 #' @export
-acoustic.summary <- function(x, dates, breaks = "auto", splits = "left", size = 100) {
+acoustic.summary <- function(x, dates, breaks = "auto", splits = "left", 
+                             size = 120, cp.idx = FALSE) {
+	use.breaks <- breaks					 
     if(!class(x) == "data.frame" & !class(x) == "matrix")
       stop("x must be data.frame or matrix")
-    if(breaks[1] ==  "auto")  {
+	  
+    if(use.breaks[1] ==  "auto")  {
       breaks.idx <- change.point(x, sig = 0.005,  min.size = size, 
 	                            alpha = 1)$estimates
       breaks <- dates[breaks.idx[-c(1,length(breaks.idx))]] 	  
     }
-    cat("Using", as.character(breaks), "for change points", "\n")	
+	
+	breaks <- c(as.character(data.table::as.ITime(min(dates))), 
+	            as.character(data.table::as.ITime(breaks)),
+				as.character(data.table::as.ITime(max(dates))))
+    cat("Using", as.character(use.breaks), "for change points", "\n")	
       idx <- list()
-        for(i in 1:length(breaks)) {
-    	  if(i == 1) {
-    	    start = min(dates)
-    	  } else {
-    	    start = breaks[i]
-    	  }
-    	  if(i == length(breaks)) {  
-            end = dates[length(dates)]  
-          } else {
-    	    end = breaks[i+1]
-    	  }
+        for(i in 1:(length(breaks)-1)) {
+    	  start = breaks[i]
+		  end = breaks[i+1]
     	  idx.values <- c(grep(start, dates):grep(end, dates))
             if(splits == "left") {
               idx.values <- idx.values[-length(idx.values)]
@@ -71,20 +70,22 @@ acoustic.summary <- function(x, dates, breaks = "auto", splits = "left", size = 
     		}
     	  idx[[i]] <- idx.values  
     	}
-		
     d <- data.frame(start=dates[1], end=dates[length(dates)], 
 	                t(spatialEco::moments(as.numeric(as.matrix(x)))) )
-	for(i in 1:length(idx)) {
-      x.sub <- as.matrix(x[idx[[i]],])
-	    if( nrow(x.sub) > 2) {
-	      d <- rbind(d, data.frame(start=dates[min(idx[[i]])], 
-	                 end=dates[max(idx[[i]])], 
-	                 t(spatialEco::moments(as.numeric(as.matrix(x.sub))))) )
-		  } else {
-	        d[nrow(d)+1,][1] <- dates[min(idx[[i]])]
-			d[nrow(d),][2] <- dates[max(idx[[i]])]
-		  }
-	}
-  return(d)	
+	  for(i in 1:length(idx)) {
+        x.sub <- as.matrix(x[idx[[i]],])
+	      if( nrow(x.sub) > 2) {
+	        d <- rbind(d, data.frame(start=dates[min(idx[[i]])], 
+	                   end=dates[max(idx[[i]])], 
+	                   t(spatialEco::moments(as.numeric(as.matrix(x.sub))))) )
+	  	  } else {
+	          d[nrow(d)+1,][1] <- dates[min(idx[[i]])]
+	  		d[nrow(d),][2] <- dates[max(idx[[i]])]
+	  	  }
+	  }
+  if( cp.idx == TRUE ) {
+    return( list(x = d, idx = breaks.idx) )
+  } else {
+    return(d)	
+  }
 } 
-
