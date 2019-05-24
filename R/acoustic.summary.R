@@ -54,7 +54,7 @@ acoustic.summary <- function(x, dates, breaks = "auto", splits = "left", size = 
       idx <- list()
         for(i in 1:length(breaks)) {
     	  if(i == 1) {
-    	    start = "00:00:00"
+    	    start = min(dates)
     	  } else {
     	    start = breaks[i]
     	  }
