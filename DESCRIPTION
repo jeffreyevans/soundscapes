@@ -10,6 +10,7 @@ Depends:
     R (>= 3.5.0)
 Imports:
     ecp (>= 3.1.0),
+    data.table,
     smooth,
     spatialEco,
     zoo,
